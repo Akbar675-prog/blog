@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white p-8 rounded-[40px] shadow-xl w-full max-w-xs text-center border border-white">
+        
+        <img id="userImg" src="" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500 shadow-lg">
+        
+        <h2 class="text-xl font-black text-gray-800 flex items-center justify-center">
+            <span id="userName"></span>
+            <span id="badgeArea"></span>
+        </h2>
+
+        <div class="mt-8 space-y-4 text-left bg-gray-50 p-5 rounded-3xl text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-500">Blog uploaded</span>
+                <span class="font-bold text-blue-600" id="totalBlog">128</span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+                <span class="text-gray-500">Upload terakhir</span>
+                <span class="font-bold" id="lastUpload">2 Jam yang lalu</span>
+            </div>
+            <div class="border-t pt-2">
+                <span class="text-gray-500 block mb-1">Verification Mark</span>
+                <button onclick="activateVerify()" class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">
+                    Default Verification Mark
+                </button>
+            </div>
+        </div>
+
+        <button onclick="localStorage.clear(); location.href='index.html'" class="mt-8 text-gray-400 text-xs font-bold hover:text-red-500 transition uppercase tracking-tighter">Sign Out from Session</button>
+    </div>
+
+    <script>
+        const session = JSON.parse(localStorage.getItem('visora_session'));
+        if (!session) window.location.href = 'index.html';
+
+        document.getElementById('userImg').src = session.photo;
+        document.getElementById('userName').innerText = session.name;
+
+        function activateVerify() {
+            // Menambah badge centang biru (SVG)
+            document.getElementById('badgeArea').innerHTML = `
+                <svg class="w-5 h-5 ml-1 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
+                </svg>`;
+            alert("Akun berhasil diverifikasi!");
+        }
+    </script>
+</body>
+</html>
