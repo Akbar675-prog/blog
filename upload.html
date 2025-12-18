@@ -1,1 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Blog - Visora Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-blue-50 flex items-center justify-center min-h-screen p-6">
+
+    <div class="bg-white p-8 rounded-[40px] shadow-xl w-full max-w-xl border border-blue-100">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-black text-blue-600 tracking-tighter italic">CREATE POST</h2>
+            <p class="text-gray-400 text-sm">Bagikan ide Anda ke seluruh dunia melalui Visora</p>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-400 ml-4 mb-1 uppercase">Nama Pengirim</label>
+                <input type="text" id="author" placeholder="Nama Anda..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 ml-4 mb-1 uppercase">URL Foto Profil</label>
+                <input type="text" id="profileURL" placeholder="https://link-foto.com/image.png" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 ml-4 mb-1 uppercase">Judul Blog</label>
+                <input type="text" id="title" placeholder="Apa judulnya?" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 ml-4 mb-1 uppercase">Konten Blog</label>
+                <textarea id="content" rows="4" placeholder="Tuliskan cerita lengkap Anda di sini..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+            </div>
+            
+            <div class="p-5 bg-gray-50 rounded-[30px]">
+                <p class="text-xs font-black mb-4 text-gray-500 tracking-widest uppercase text-center">Verification Badge (Select 1)</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer hover:shadow-sm transition">
+                        <input type="radio" name="badge" value="instagram" class="w-4 h-4 text-blue-600"> 
+                        <span class="ml-3 text-sm font-bold text-gray-700">Instagram Badge</span>
+                    </label>
+                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer hover:shadow-sm transition">
+                        <input type="radio" name="badge" value="roblox" class="w-4 h-4 text-blue-600"> 
+                        <span class="ml-3 text-sm font-bold text-gray-700">Roblox Badge</span>
+                    </label>
+                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer hover:shadow-sm transition">
+                        <input type="radio" name="badge" value="tiktok" class="w-4 h-4 text-blue-600"> 
+                        <span class="ml-3 text-sm font-bold text-gray-700">TikTok Badge</span>
+                    </label>
+                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer hover:shadow-sm transition">
+                        <input type="radio" name="badge" value="" checked class="w-4 h-4 text-gray-400"> 
+                        <span class="ml-3 text-sm font-bold text-gray-400">Tanpa Badge</span>
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="sendToFirebase()" id="btnSave" class="w-full bg-blue-600 text-white font-black py-5 rounded-[25px] hover:bg-blue-800 transition shadow-lg shadow-blue-100 uppercase tracking-widest">
+                Publish Blog
+            </button>
+            <a href="index.html" class="block text-center text-xs font-bold text-gray-400 mt-2 hover:text-blue-500 uppercase">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXJ0qlbLT-cmoNJoYDqln8oWeZtRMKC84",
+            authDomain: "blogsiyes.firebaseapp.com",
+            projectId: "blogsiyes",
+            storageBucket: "blogsiyes.firebasestorage.app",
+            messagingSenderId: "880827189086",
+            appId: "1:880827189086:web:61c8e086f1df5f258d31cf"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Daftar Nama yang Diblokir (Harus pakai Token)
+        const blockedNames = ["Visora Developer", "Visora Cloud", "Hosea", "Rasyid", "Zhafran"];
+
+        async function sendToFirebase() {
+            const author = document.getElementById('author').value.trim();
+            const profileURL = document.getElementById('profileURL').value.trim();
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const badgeType = document.querySelector('input[name="badge"]:checked').value;
+
+            // Validasi Data Kosong
+            if(!author || !title || !content) {
+                alert("Harap lengkapi Nama, Judul, dan Isi Blog!");
+                return;
+            }
+
+            // CEK BLOKIR NAMA
+            const session = JSON.parse(localStorage.getItem('visora_session'));
+            if (blockedNames.includes(author)) {
+                if (!session || session.name !== author) {
+                    alert("❌ Nama '" + author + "' dilindungi! Anda harus Login menggunakan Token/KEYS untuk menggunakan nama ini.");
+                    window.location.href = "login.html";
+                    return;
+                }
+            }
+
+            const btn = document.getElementById('btnSave');
+            btn.innerText = "Sabar, sedang mengirim...";
+            btn.disabled = true;
+
+            try {
+                await db.collection("posts").add({
+                    author, 
+                    profileURL, 
+                    title, 
+                    content, 
+                    badgeType,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("✅ Blog Berhasil Diterbitkan!");
+                window.location.href = "index.html";
+            } catch (e) {
+                alert("Gagal: " + e.message);
+                btn.innerText = "Publish Blog";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
 
