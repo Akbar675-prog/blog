@@ -34,65 +34,77 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDXJ0qlbLT-cmoNJoYDqln8oWeZtRMKC84",
-            authDomain: "blogsiyes.firebaseapp.com",
-            projectId: "blogsiyes",
-            storageBucket: "blogsiyes.firebasestorage.app",
-            messagingSenderId: "880827189086",
-            appId: "1:880827189086:web:61c8e086f1df5f258d31cf",
-            measurementId: "G-F73NQ3RMLQ"
-        };
+        // GANTI BAGIAN SCRIPT DI index.html DENGAN INI
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+const badges = {
+    instagram: `<svg class="inline-block ml-1 w-4 h-4" viewBox="0 0 48 48"><polygon fill="#42a5f5" points="29.62,3 33.053,8.308 39.367,8.624 39.686,14.937 44.997,18.367 42.116,23.995 45,29.62 39.692,33.053 39.376,39.367 33.063,39.686 29.633,44.997 24.005,42.116 18.38,45 14.947,39.692 8.633,39.376 8.314,33.063 3.003,29.633 5.884,24.005 3,18.38 8.308,14.947 8.624,8.633 14.937,8.314 18.367,3.003 23.995,5.884"></polygon><polygon fill="#fff" points="21.396,31.255 14.899,24.76 17.021,22.639 21.428,27.046 30.996,17.772 33.084,19.926"></polygon></svg>`,
+    roblox: `<svg class="inline-block ml-1 w-4 h-4" viewBox="0 0 28 28" fill="none"><rect x="5.88818" width="22.89" height="22.89" transform="rotate(15 5.88818 0)" fill="#0066FF"/><path d="M20.543 8.7508L11.817 19.6648L7.45 15.2968L9.633 13.1148L11.817 15.2998L18.367 8.7508Z" fill="white"/></svg>`,
+    tiktok: `<img src="https://cdn-icons-png.flaticon.com/128/6364/6364343.png" class="inline-block ml-1 w-4 h-4">`
+};
 
-        const badges = {
-            instagram: `<svg class="inline-block ml-1 w-5 h-5" viewBox="0 0 48 48"><polygon fill="#42a5f5" points="29.62,3 33.053,8.308 39.367,8.624 39.686,14.937 44.997,18.367 42.116,23.995 45,29.62 39.692,33.053 39.376,39.367 33.063,39.686 29.633,44.997 24.005,42.116 18.38,45 14.947,39.692 8.633,39.376 8.314,33.063 3.003,29.633 5.884,24.005 3,18.38 8.308,14.947 8.624,8.633 14.937,8.314 18.367,3.003 23.995,5.884"></polygon><polygon fill="#fff" points="21.396,31.255 14.899,24.76 17.021,22.639 21.428,27.046 30.996,17.772 33.084,19.926"></polygon></svg>`,
-            roblox: `<svg class="inline-block ml-1 w-5 h-5" viewBox="0 0 28 28" fill="none"><rect x="5.88818" width="22.89" height="22.89" transform="rotate(15 5.88818 0)" fill="#0066FF"/><path d="M20.543 8.7508L11.817 19.6648L7.45 15.2968L9.633 13.1148L11.817 15.2998L18.367 8.7508Z" fill="white"/></svg>`,
-            tiktok: `<img src="https://cdn-icons-png.flaticon.com/128/6364/6364343.png" class="inline-block ml-1 w-5 h-5">`
-        };
+auth.onAuthStateChanged(user => {
+    const session = JSON.parse(localStorage.getItem('visora_session'));
+    const nav = document.getElementById('authSection');
 
-        auth.onAuthStateChanged(user => {
-            const tokenUser = JSON.parse(localStorage.getItem('visora_session'));
-            const nav = document.getElementById('authSection');
-            if (tokenUser) {
-                nav.innerHTML = `<div onclick="location.href='profile.html'" class="flex items-center space-x-2 cursor-pointer bg-gray-100 p-1 pr-4 rounded-full border border-gray-200"><img src="${tokenUser.photo}" class="w-8 h-8 rounded-full shadow-sm"><span class="font-bold text-xs text-gray-700">${tokenUser.name}</span></div>`;
-            } else if (user) {
-                nav.innerHTML = `<div class="flex items-center space-x-2 bg-gray-100 p-1 pr-4 rounded-full border border-gray-200"><img src="${user.photoURL}" class="w-8 h-8 rounded-full shadow-sm"><span class="font-bold text-xs text-gray-700">${user.displayName}</span></div>`;
-            }
-            renderBlogs();
-        });
+    if (session) {
+        // Navigasi dengan Badge terpilih dari profile.html
+        nav.innerHTML = `
+            <div onclick="location.href='profile.html'" class="flex items-center space-x-2 cursor-pointer bg-gray-50 p-1 pr-4 rounded-full border border-gray-200 shadow-sm">
+                <img src="${session.photo}" class="w-8 h-8 rounded-full">
+                <span class="font-bold text-xs text-gray-700">${session.name}</span>
+                ${session.badge ? badges[session.badge] : ''}
+            </div>`;
+    } else if (user) {
+        nav.innerHTML = `
+            <div class="flex items-center space-x-2 bg-gray-50 p-1 pr-4 rounded-full border">
+                <img src="${user.photoURL}" class="w-8 h-8 rounded-full">
+                <span class="font-bold text-xs text-gray-700">${user.displayName}</span>
+            </div>`;
+    }
+    renderBlogs();
+});
 
-        function renderBlogs(filter = '') {
-            const container = document.getElementById('blogContainer');
-            db.collection("posts").orderBy("createdAt", "desc").onSnapshot(snap => {
-                container.innerHTML = '';
-                if(snap.empty) container.innerHTML = '<p class="text-center text-gray-400 mt-10">Belum ada blog yang diterbitkan.</p>';
-                snap.forEach(doc => {
-                    const b = doc.data();
-                    if (b.title.toLowerCase().includes(filter.toLowerCase())) {
-                        container.innerHTML += `
-                            <div class="bg-white p-7 rounded-[35px] shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                                <div class="flex items-center mb-5">
-                                    <img src="${b.profileURL || 'https://ui-avatars.com/api/?name='+b.author}" class="w-11 h-11 rounded-full mr-3 border-2 border-blue-50">
-                                    <div class="flex flex-col">
-                                        <div class="flex items-center">
-                                            <span class="font-bold text-gray-900 text-sm">${b.author}</span>
-                                            ${b.badgeType ? badges[b.badgeType] : ''}
-                                        </div>
-                                        <span class="text-[10px] text-gray-400 uppercase font-medium">${b.createdAt ? new Date(b.createdAt.seconds*1000).toLocaleDateString() : 'Baru saja'}</span>
-                                    </div>
+function renderBlogs(filter = '') {
+    const container = document.getElementById('blogContainer');
+    const session = JSON.parse(localStorage.getItem('visora_session'));
+    const googleUser = auth.currentUser;
+
+    db.collection("posts").orderBy("createdAt", "desc").onSnapshot(snap => {
+        container.innerHTML = '';
+        snap.forEach(doc => {
+            const b = doc.data();
+            if (b.title.toLowerCase().includes(filter.toLowerCase())) {
+                
+                // LOGIKA HAPUS YANG DIPERBAIKI
+                let showDelete = false;
+                if (session && b.author === session.name) showDelete = true;
+                if (googleUser && b.author === googleUser.displayName) showDelete = true;
+
+                container.innerHTML += `
+                    <div class="bg-white p-6 rounded-[35px] shadow-sm border border-gray-100 mb-6">
+                        <div class="flex items-center mb-4">
+                            <img src="${b.profileURL || 'https://ui-avatars.com/api/?name='+b.author}" class="w-10 h-10 rounded-full mr-3">
+                            <div class="flex flex-col">
+                                <div class="flex items-center font-bold text-sm text-gray-800">
+                                    ${b.author} ${b.badgeType ? badges[b.badgeType] : ''}
                                 </div>
-                                <h2 class="text-2xl font-black text-gray-900 mb-3 leading-tight">${b.title}</h2>
-                                <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-line">${b.content}</p>
-                            </div>`;
-                    }
-                });
-            });
-        }
-        document.getElementById('searchInput').addEventListener('input', (e) => renderBlogs(e.target.value));
+                                <span class="text-[9px] text-gray-400 uppercase tracking-widest">${b.createdAt ? new Date(b.createdAt.seconds*1000).toLocaleDateString() : 'Baru'}</span>
+                            </div>
+                            ${showDelete ? `<button onclick="deletePost('${doc.id}')" class="ml-auto text-red-500 font-bold text-[10px] hover:underline">HAPUS</button>` : ''}
+                        </div>
+                        <h2 class="text-xl font-black text-gray-900 mb-2">${b.title}</h2>
+                        <p class="text-gray-600 text-sm leading-relaxed">${b.content}</p>
+                    </div>`;
+            }
+        });
+    });
+}
+
+function deletePost(id) {
+    if(confirm("Yakin hapus blog ini?")) {
+        db.collection("posts").doc(id).delete().then(() => alert("Terhapus!"));
+    }
+}
     </script>
 </body>
 </html>
