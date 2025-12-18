@@ -2,37 +2,42 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Profile Preview</title>
+    <title>Profile Preview - Visora</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white p-8 rounded-[40px] shadow-xl w-full max-w-xs text-center border border-white">
+    <div class="bg-white p-8 rounded-[40px] shadow-xl w-full max-w-xs text-center border border-white relative">
         
         <img id="userImg" src="" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500 shadow-lg">
         
         <h2 class="text-xl font-black text-gray-800 flex items-center justify-center">
             <span id="userName"></span>
-            <span id="badgeArea"></span>
+            <span id="badgeArea" class="ml-1"></span>
         </h2>
 
         <div class="mt-8 space-y-4 text-left bg-gray-50 p-5 rounded-3xl text-sm">
             <div class="flex justify-between">
                 <span class="text-gray-500">Blog uploaded</span>
-                <span class="font-bold text-blue-600" id="totalBlog">128</span>
+                <span class="font-bold text-blue-600">128</span>
             </div>
-            <div class="flex justify-between border-t pt-2">
-                <span class="text-gray-500">Upload terakhir</span>
-                <span class="font-bold" id="lastUpload">2 Jam yang lalu</span>
-            </div>
-            <div class="border-t pt-2">
-                <span class="text-gray-500 block mb-1">Verification Mark</span>
-                <button onclick="activateVerify()" class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">
-                    Default Verification Mark
+            
+            <div class="border-t pt-2 relative">
+                <span class="text-gray-500 block mb-2">Verification Mark</span>
+                <button onclick="toggleDropdown()" class="w-full bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase flex justify-between items-center">
+                    Pilih Verifikasi <span>▼</span>
                 </button>
+                
+                <div id="verifyOptions" class="hidden absolute left-0 right-0 mt-2 bg-white shadow-xl rounded-2xl p-2 z-10 border border-gray-100">
+                    <button onclick="setBadge('instagram')" class="w-full text-left p-2 hover:bg-blue-50 rounded-lg text-xs font-bold">Instagram Badge</button>
+                    <button onclick="setBadge('roblox')" class="w-full text-left p-2 hover:bg-blue-50 rounded-lg text-xs font-bold">Roblox Badge</button>
+                    <button onclick="setBadge('tiktok')" class="w-full text-left p-2 hover:bg-blue-50 rounded-lg text-xs font-bold">TikTok Badge</button>
+                    <button onclick="setBadge('')" class="w-full text-left p-2 hover:bg-red-50 text-red-500 rounded-lg text-xs font-bold">Hapus Badge</button>
+                </div>
             </div>
         </div>
 
-        <button onclick="localStorage.clear(); location.href='index.html'" class="mt-8 text-gray-400 text-xs font-bold hover:text-red-500 transition uppercase tracking-tighter">Sign Out from Session</button>
+        <button onclick="location.href='index.html'" class="mt-6 text-blue-600 text-xs font-bold uppercase block w-full">Kembali ke Beranda</button>
+        <button onclick="localStorage.clear(); location.href='index.html'" class="mt-4 text-gray-400 text-[10px] font-bold uppercase">Sign Out</button>
     </div>
 
     <script>
@@ -42,13 +47,28 @@
         document.getElementById('userImg').src = session.photo;
         document.getElementById('userName').innerText = session.name;
 
-        function activateVerify() {
-            // Menambah badge centang biru (SVG)
-            document.getElementById('badgeArea').innerHTML = `
-                <svg class="w-5 h-5 ml-1 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
-                </svg>`;
-            alert("Akun berhasil diverifikasi!");
+        // Load badge saat ini jika ada
+        if(session.badge) applyBadgeUI(session.badge);
+
+        function toggleDropdown() {
+            document.getElementById('verifyOptions').classList.toggle('hidden');
+        }
+
+        const badges = {
+            instagram: `<svg class="w-5 h-5 text-blue-500" viewBox="0 0 48 48"><polygon fill="#42a5f5" points="29.62,3 33.053,8.308 39.367,8.624 39.686,14.937 44.997,18.367 42.116,23.995 45,29.62 39.692,33.053 39.376,39.367 33.063,39.686 29.633,44.997 24.005,42.116 18.38,45 14.947,39.692 8.633,39.376 8.314,33.063 3.003,29.633 5.884,24.005 3,18.38 8.308,14.947 8.624,8.633 14.937,8.314 18.367,3.003 23.995,5.884"></polygon><polygon fill="#fff" points="21.396,31.255 14.899,24.76 17.021,22.639 21.428,27.046 30.996,17.772 33.084,19.926"></polygon></svg>`,
+            roblox: `<svg class="w-5 h-5 text-blue-600" viewBox="0 0 28 28" fill="none"><rect x="5.88818" width="22.89" height="22.89" transform="rotate(15 5.88818 0)" fill="#0066FF"/><path d="M20.543 8.7508L11.817 19.6648L7.45 15.2968L9.633 13.1148L11.817 15.2998L18.367 8.7508Z" fill="white"/></svg>`,
+            tiktok: `<img src="https://cdn-icons-png.flaticon.com/128/6364/6364343.png" class="w-5 h-5">`
+        };
+
+        function setBadge(type) {
+            session.badge = type;
+            localStorage.setItem('visora_session', JSON.stringify(session));
+            applyBadgeUI(type);
+            toggleDropdown();
+        }
+
+        function applyBadgeUI(type) {
+            document.getElementById('badgeArea').innerHTML = type ? badges[type] : '';
         }
     </script>
 </body>
