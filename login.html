@@ -9,34 +9,25 @@
 </head>
 <body class="bg-blue-600 flex items-center justify-center min-h-screen">
     <div class="bg-white p-10 rounded-[40px] shadow-2xl w-full max-w-md text-center">
-        <h2 class="text-2xl font-black mb-8">LOGIN TO VISORA</h2>
-        
-        <button onclick="loginGoogle()" class="w-full border-2 border-gray-100 p-3 rounded-2xl flex items-center justify-center font-bold hover:bg-gray-50 mb-4 transition">
+        <h2 class="text-2xl font-black mb-8 uppercase italic tracking-tighter">Login Visora</h2>
+        <button onclick="loginGoogle()" class="w-full border-2 p-3 rounded-2xl flex items-center justify-center font-bold mb-4 hover:bg-gray-50 transition">
             <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 mr-3"> Login With Google
         </button>
-
-        <div class="text-gray-400 text-xs mb-4 italic">------------------ OR ------------------</div>
-
+        <div class="text-gray-400 text-xs mb-4">------------------ OR ------------------</div>
         <div class="space-y-3 mb-6">
-            <button class="w-full bg-gray-50 p-3 rounded-2xl text-left px-6 text-gray-600 font-semibold">📧 Login With Email</button>
-            <button class="w-full bg-gray-50 p-3 rounded-2xl text-left px-6 text-gray-600 font-semibold">📞 Login With Number</button>
+            <button class="w-full bg-gray-50 p-3 rounded-2xl text-left px-6 text-gray-600 font-semibold italic">Login With Email</button>
+            <button class="w-full bg-gray-50 p-3 rounded-2xl text-left px-6 text-gray-600 font-semibold italic">Login With Number</button>
         </div>
-
-        <input type="password" id="tokenInput" placeholder="Login with Token KEYS" class="w-full p-4 bg-blue-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none text-center font-mono">
-        
-        <button onclick="loginWithToken()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black mt-4 shadow-lg shadow-blue-200 hover:bg-blue-700 transition">Log in</button>
-
-        <p class="mt-8 text-sm text-gray-500 italic">
-            Don't have an account?, register on <br>
-            <a href="#" class="text-blue-600 font-bold underline">Register Page</a>
-        </p>
+        <input type="password" id="tokenInput" placeholder="Login with Token KEYS" class="w-full p-4 bg-blue-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none font-mono text-center">
+        <button onclick="loginToken()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black mt-4 shadow-lg">LOG IN</button>
+        <p class="mt-8 text-xs text-gray-400">Don't have an account?, register on <a href="#" class="text-blue-600 font-bold underline">Register Page</a></p>
     </div>
 
     <script>
-        const firebaseConfig = { /* SAMA DENGAN DI ATAS */ };
+        const firebaseConfig = { apiKey: "AIzaSyDXJ0qlbLT-cmoNJoYDqln8oWeZtRMKC84", authDomain: "blogsiyes.firebaseapp.com", projectId: "blogsiyes", storageBucket: "blogsiyes.firebasestorage.app", messagingSenderId: "880827189086", appId: "1:880827189086:web:61c8e086f1df5f258d31cf", measurementId: "G-F73NQ3RMLQ" };
         firebase.initializeApp(firebaseConfig);
 
-        const KEYS_DATABASE = {
+        const KEYS = {
             "KeysSha::bbz0paskhfw81sas_mnsdSWasAawwD": {name: "Visora Developer", photo: "https://i.ibb.co/vzYp6Yk/dev.png"},
             "KeysSha::bbz7sbtpaws1sas_mnsdSWasAawwDsaw32": {name: "Visora Cloud", photo: "https://i.ibb.co/vzYp6Yk/cloud.png"},
             "zXsadqw13": {name: "Zhafran", photo: "https://ui-avatars.com/api/?name=Zhafran&background=random"},
@@ -44,19 +35,11 @@
             "NpWpmza::id:3000": {name: "Rasyid", photo: "https://ui-avatars.com/api/?name=Rasyid&background=random"}
         };
 
-        function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(() => window.location.href='index.html');
-        }
-
-        function loginWithToken() {
-            const input = document.getElementById('tokenInput').value;
-            if (KEYS_DATABASE[input]) {
-                localStorage.setItem('visora_session', JSON.stringify(KEYS_DATABASE[input]));
-                window.location.href = 'index.html';
-            } else {
-                alert("Token Salah atau Tidak Terdaftar!");
-            }
+        function loginGoogle() { firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => window.location.href='index.html'); }
+        function loginToken() {
+            const val = document.getElementById('tokenInput').value;
+            if(KEYS[val]) { localStorage.setItem('visora_session', JSON.stringify(KEYS[val])); window.location.href='index.html'; }
+            else { alert("Token Invalid!"); }
         }
     </script>
 </body>
