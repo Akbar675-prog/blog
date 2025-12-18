@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Blog - Visora Cloud</title>
+    <title>Upload - Visora Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -11,30 +11,39 @@
 <body class="bg-blue-50 flex items-center justify-center min-h-screen p-6">
 
     <div class="bg-white p-10 rounded-[45px] shadow-2xl w-full max-w-xl border border-white">
-        <h2 class="text-3xl font-black text-blue-600 mb-8 text-center tracking-tighter italic">CREATE POST</h2>
+        <h2 class="text-3xl font-black text-blue-600 mb-8 text-center italic tracking-tighter uppercase">New Post</h2>
         
         <div class="space-y-4">
-            <input type="text" id="author" placeholder="Nama Kamu" class="w-full p-4 bg-gray-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 outline-none font-bold">
-            <input type="text" id="profileURL" placeholder="Link Foto Profil (URL)" class="w-full p-4 bg-gray-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 outline-none">
-            <input type="text" id="title" placeholder="Judul Blog" class="w-full p-4 bg-gray-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 outline-none font-black">
-            <textarea id="content" rows="4" placeholder="Apa yang ingin kamu tulis hari ini?" class="w-full p-4 bg-gray-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+            <input type="text" id="author" placeholder="Nama Kamu" class="w-full p-4 bg-gray-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 font-bold outline-none">
+            <input type="text" id="profileURL" placeholder="Link Foto Profil (URL)" class="w-full p-4 bg-gray-50 border-none rounded-[20px] outline-none">
+            <input type="text" id="title" placeholder="Judul Postingan" class="w-full p-4 bg-gray-50 border-none rounded-[20px] font-black outline-none">
+            <textarea id="content" rows="4" placeholder="Tulis cerita kamu..." class="w-full p-4 bg-gray-50 border-none rounded-[20px] outline-none"></textarea>
             
-            <div class="p-5 bg-gray-50 rounded-[30px]">
-                <p class="text-[11px] font-black text-gray-400 mb-4 uppercase tracking-widest text-center">Pilih Verification Badge</p>
+            <div id="tokenBadgeSection" class="hidden p-5 bg-blue-50 rounded-[30px] border border-blue-100">
+                <p class="text-[11px] font-black text-blue-400 mb-4 uppercase tracking-widest text-center">🛡️ Developer Badge Options</p>
                 <div class="grid grid-cols-2 gap-3">
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:shadow-sm"><input type="radio" name="badge" value="instagram"> <span>Instagram</span></label>
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:shadow-sm"><input type="radio" name="badge" value="roblox"> <span>Roblox</span></label>
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:shadow-sm"><input type="radio" name="badge" value="tiktok"> <span>TikTok</span></label>
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:shadow-sm"><input type="radio" name="badge" value="" checked> <span>Tanpa Badge</span></label>
+                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
+                        <input type="radio" name="badge" value="instagram"> <span>Instagram</span>
+                    </label>
+                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
+                        <input type="radio" name="badge" value="roblox"> <span>Roblox</span>
+                    </label>
+                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
+                        <input type="radio" name="badge" value="tiktok"> <span>TikTok</span>
+                    </label>
+                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
+                        <input type="radio" name="badge" value="" checked> <span>Default</span>
+                    </label>
                 </div>
             </div>
 
-            <button onclick="sendToFirebase()" id="btnSave" class="w-full bg-blue-600 text-white font-black py-5 rounded-[25px] hover:bg-blue-800 transition shadow-xl shadow-blue-100">TERBITKAN SEKARANG</button>
-            <p class="text-center"><a href="index.html" class="text-xs font-bold text-gray-400 hover:text-blue-500 transition">KEMBALI KE HOME</a></p>
+            <button onclick="sendToFirebase()" id="btnSave" class="w-full bg-blue-600 text-white font-black py-5 rounded-[25px] hover:bg-blue-800 transition shadow-xl shadow-blue-100 uppercase tracking-widest">Publish Blog</button>
+            <p class="text-center"><a href="index.html" class="text-xs font-bold text-gray-400 hover:text-blue-500 uppercase tracking-tighter transition">Kembali ke Beranda</a></p>
         </div>
     </div>
 
     <script>
+        // Konfigurasi Firebase Milikmu
         const firebaseConfig = {
             apiKey: "AIzaSyDXJ0qlbLT-cmoNJoYDqln8oWeZtRMKC84",
             authDomain: "blogsiyes.firebaseapp.com",
@@ -44,33 +53,46 @@
             appId: "1:880827189086:web:61c8e086f1df5f258d31cf",
             measurementId: "G-F73NQ3RMLQ"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Daftar nama admin/dev
         const blockedNames = ["Visora Developer", "Visora Cloud", "Hosea", "Rasyid", "Zhafran"];
 
+        // CEK LOGIN TOKEN SAAT HALAMAN DIBUKA
+        const session = JSON.parse(localStorage.getItem('visora_session'));
+        const badgeSection = document.getElementById('tokenBadgeSection');
+        const authorInput = document.getElementById('author');
+
+        if (session) {
+            // Jika login pakai token, tampilkan pilihan badge
+            badgeSection.classList.remove('hidden');
+            // Otomatis isi nama author sesuai token
+            authorInput.value = session.name;
+        }
+
         async function sendToFirebase() {
-            const author = document.getElementById('author').value.trim();
+            const author = authorInput.value.trim();
             const title = document.getElementById('title').value.trim();
             const content = document.getElementById('content').value.trim();
             const profileURL = document.getElementById('profileURL').value.trim();
-            const badgeType = document.querySelector('input[name="badge"]:checked').value;
+            
+            // Ambil nilai badge jika section-nya muncul, jika tidak maka kosong ""
+            const badgeType = session ? document.querySelector('input[name="badge"]:checked').value : "";
 
             if(!author || !title || !content) return alert("Wajib isi Nama, Judul, dan Konten!");
 
-            // Cek Sesi Token jika nama terblokir dipakai
-            const session = JSON.parse(localStorage.getItem('visora_session'));
+            // Proteksi Nama Terlarang
             if (blockedNames.includes(author)) {
                 if (!session || session.name !== author) {
-                    alert("⚠️ Nama ini dilindungi. Anda harus LOGIN menggunakan Token KEYS untuk menggunakan nama ini.");
+                    alert("⚠️ Nama ini khusus untuk pemilik TOKEN KEYS!");
                     window.location.href = "login.html";
                     return;
                 }
             }
 
             const btn = document.getElementById('btnSave');
-            btn.innerText = "Sabar, lagi ngirim...";
+            btn.innerText = "Mengirim...";
             btn.disabled = true;
 
             try {
@@ -81,7 +103,7 @@
                 window.location.href = "index.html";
             } catch (e) {
                 alert("Gagal: " + e.message);
-                btn.innerText = "TERBITKAN SEKARANG";
+                btn.innerText = "Publish Blog";
                 btn.disabled = false;
             }
         }
