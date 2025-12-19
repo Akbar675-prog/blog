@@ -2,111 +2,32 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload - Visora Cloud</title>
+    <title>Upload Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-blue-50 flex items-center justify-center min-h-screen p-6">
-
-    <div class="bg-white p-10 rounded-[45px] shadow-2xl w-full max-w-xl border border-white">
-        <h2 class="text-3xl font-black text-blue-600 mb-8 text-center italic tracking-tighter uppercase">New Post</h2>
-        
+    <div class="bg-white p-10 rounded-[45px] shadow-2xl w-full max-w-xl">
+        <h2 class="text-3xl font-black text-blue-600 mb-8 text-center italic tracking-tighter">NEW POST</h2>
         <div class="space-y-4">
-            <input type="text" id="author" placeholder="Nama Kamu" class="w-full p-4 bg-gray-50 border-none rounded-[20px] focus:ring-2 focus:ring-blue-500 font-bold outline-none">
-            <input type="text" id="profileURL" placeholder="Link Foto Profil (URL)" class="w-full p-4 bg-gray-50 border-none rounded-[20px] outline-none">
-            <input type="text" id="title" placeholder="Judul Postingan" class="w-full p-4 bg-gray-50 border-none rounded-[20px] font-black outline-none">
-            <textarea id="content" rows="4" placeholder="Tulis cerita kamu..." class="w-full p-4 bg-gray-50 border-none rounded-[20px] outline-none"></textarea>
-            
-            <div id="tokenBadgeSection" class="hidden p-5 bg-blue-50 rounded-[30px] border border-blue-100">
-                <p class="text-[11px] font-black text-blue-400 mb-4 uppercase tracking-widest text-center">🛡️ Developer Badge Options</p>
+            <input type="text" id="_0x1" placeholder="Nama Kamu" class="w-full p-4 bg-gray-50 border-none rounded-[20px] font-bold outline-none">
+            <input type="text" id="_0x2" placeholder="Foto Profil URL" class="w-full p-4 bg-gray-50 border-none rounded-[20px] outline-none">
+            <input type="text" id="_0x3" placeholder="Judul" class="w-full p-4 bg-gray-50 border-none rounded-[20px] font-black outline-none">
+            <textarea id="_0x4" rows="4" placeholder="Konten..." class="w-full p-4 bg-gray-50 border-none rounded-[20px] outline-none"></textarea>
+            <div id="_0x5" class="hidden p-5 bg-blue-50 rounded-[30px] border border-blue-100">
                 <div class="grid grid-cols-2 gap-3">
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
-                        <input type="radio" name="badge" value="instagram"> <span>Instagram</span>
-                    </label>
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
-                        <input type="radio" name="badge" value="roblox"> <span>Roblox</span>
-                    </label>
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
-                        <input type="radio" name="badge" value="tiktok"> <span>TikTok</span>
-                    </label>
-                    <label class="flex items-center space-x-3 text-sm bg-white p-3 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
-                        <input type="radio" name="badge" value="" checked> <span>Default</span>
-                    </label>
+                    <label class="flex items-center space-x-2 text-sm bg-white p-3 rounded-xl cursor-pointer"><input type="radio" name="b" value="instagram"> <span>Instagram</span></label>
+                    <label class="flex items-center space-x-2 text-sm bg-white p-3 rounded-xl cursor-pointer"><input type="radio" name="b" value="roblox"> <span>Roblox</span></label>
+                    <label class="flex items-center space-x-2 text-sm bg-white p-3 rounded-xl cursor-pointer"><input type="radio" name="b" value="tiktok"> <span>TikTok</span></label>
+                    <label class="flex items-center space-x-2 text-sm bg-white p-3 rounded-xl cursor-pointer"><input type="radio" name="b" value="" checked> <span>No Badge</span></label>
                 </div>
             </div>
-
-            <button onclick="sendToFirebase()" id="btnSave" class="w-full bg-blue-600 text-white font-black py-5 rounded-[25px] hover:bg-blue-800 transition shadow-xl shadow-blue-100 uppercase tracking-widest">Publish Blog</button>
-            <p class="text-center"><a href="index.html" class="text-xs font-bold text-gray-400 hover:text-blue-500 uppercase tracking-tighter transition">Kembali ke Beranda</a></p>
+            <button onclick="_0x6()" id="_0x7" class="w-full bg-blue-600 text-white font-black py-5 rounded-[25px] shadow-xl">PUBLISH</button>
         </div>
     </div>
-
     <script>
-        // Konfigurasi Firebase Milikmu
-        const firebaseConfig = {
-            apiKey: "AIzaSyDXJ0qlbLT-cmoNJoYDqln8oWeZtRMKC84",
-            authDomain: "blogsiyes.firebaseapp.com",
-            projectId: "blogsiyes",
-            storageBucket: "blogsiyes.firebasestorage.app",
-            messagingSenderId: "880827189086",
-            appId: "1:880827189086:web:61c8e086f1df5f258d31cf",
-            measurementId: "G-F73NQ3RMLQ"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Daftar nama admin/dev
-        const blockedNames = ["Visora Developer", "Visora Cloud", "Hosea", "Rasyid", "Zhafran"];
-
-        // CEK LOGIN TOKEN SAAT HALAMAN DIBUKA
-        const session = JSON.parse(localStorage.getItem('visora_session'));
-        const badgeSection = document.getElementById('tokenBadgeSection');
-        const authorInput = document.getElementById('author');
-
-        if (session) {
-            // Jika login pakai token, tampilkan pilihan badge
-            badgeSection.classList.remove('hidden');
-            // Otomatis isi nama author sesuai token
-            authorInput.value = session.name;
-        }
-
-        async function sendToFirebase() {
-            const author = authorInput.value.trim();
-            const title = document.getElementById('title').value.trim();
-            const content = document.getElementById('content').value.trim();
-            const profileURL = document.getElementById('profileURL').value.trim();
-            
-            // Ambil nilai badge jika section-nya muncul, jika tidak maka kosong ""
-            const badgeType = session ? document.querySelector('input[name="badge"]:checked').value : "";
-
-            if(!author || !title || !content) return alert("Wajib isi Nama, Judul, dan Konten!");
-
-            // Proteksi Nama Terlarang
-            if (blockedNames.includes(author)) {
-                if (!session || session.name !== author) {
-                    alert("⚠️ Nama ini khusus untuk pemilik TOKEN KEYS!");
-                    window.location.href = "login.html";
-                    return;
-                }
-            }
-
-            const btn = document.getElementById('btnSave');
-            btn.innerText = "Mengirim...";
-            btn.disabled = true;
-
-            try {
-                await db.collection("posts").add({
-                    author, title, content, profileURL, badgeType,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                window.location.href = "index.html";
-            } catch (e) {
-                alert("Gagal: " + e.message);
-                btn.innerText = "Publish Blog";
-                btn.disabled = false;
-            }
-        }
+        const _0x4c2a=(_0x5b32)=>['apiKey','AIzaSyDXJ0qlbLT-cmoNJoYDqln8oWeZtRMKC84','authDomain','blogsiyes.firebaseapp.com','projectId','blogsiyes','storageBucket','blogsiyes.firebasestorage.app','messagingSenderId','880827189086','appId','1:880827189086:web:61c8e086f1df5f258d31cf','measurementId','G-F73NQ3RMLQ','initializeApp','firestore','visora_session','getItem','parse','collection','posts','add','serverTimestamp'][_0x5b32];firebase[_0x4c2a(14)]({apiKey:_0x4c2a(1),authDomain:_0x4c2a(3),projectId:_0x4c2a(5),storageBucket:_0x4c2a(7),messagingSenderId:_0x4c2a(9),appId:_0x4c2a(11),measurementId:_0x4c2a(13)});const _0xd=firebase[_0x4c2a(15)]();const _0x8=JSON[_0x4c2a(18)](localStorage[_0x4c2a(17)](_0x4c2a(16)));if(_0x8){document['getElementById']('_0x5')['classList']['remove']('hidden');document['getElementById']('_0x1')['value']=_0x8['name'];}async function _0x6(){const _0x9=document['getElementById']('_0x1')['value'],_0x10=document['getElementById']('_0x3')['value'],_0x11=document['getElementById']('_0x4')['value'];if(!_0x9||!_0x10||!_0x11)return alert('Error');const _0x12=_0x8?document['querySelector']('input[name="b"]:checked')['value']:'';document['getElementById']('_0x7')['disabled']=true;try{await _0xd[_0x4c2a(19)](_0x4c2a(20))[_0x4c2a(21)]({author:_0x9,title:_0x10,content:_0x11,profileURL:document['getElementById']('_0x2')['value'],badgeType:_0x12,createdAt:firebase['firestore']['FieldValue'][_0x4c2a(22)]()});location['href']='index.html';}catch(_0xe){alert('Error');}}
     </script>
 </body>
 </html>
